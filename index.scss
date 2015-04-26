@@ -1,0 +1,57 @@
+.finder-wrap {
+	position: relative;
+	height: 100%;
+	.finder-main {
+		overflow: auto;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	}
+	.finder-panels {
+		height: 100%;
+	}
+	.finder-panel {
+		float: left;
+		width: 300px;
+		height: 100%;
+		border-right: 1px solid #aaa;
+		&:last-child {
+			border-right: 0;
+		}
+		ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+	}
+	.finder-dir {
+		li {
+			cursor: pointer;
+			padding: 0 12px;
+			&.is-selected {
+				background: rgba(#2f6d86, .3);
+			}
+		}
+	}
+	.finder-image {
+		width: 600px;
+		figure {
+			margin: 0;
+			img {
+				display: block;
+				max-width: 100%;
+				max-height: 150px;
+				margin: 0 auto;
+				opacity: 0;
+				-webkit-transition: opacity .4s ease-out;
+				-moz-transition: opacity .4s ease-out;
+				transition: opacity .4s ease-out;
+				&.is-loaded {
+					opacity: 1;
+				}
+			}
+		}
+	}
+}

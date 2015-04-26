@@ -1,0 +1,15 @@
+{
+  "name": "finder.js",
+  "version": "0.1.0-dev",
+  "main": "index.js",
+  "author": "chielkunkels",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chielkunkels/finder.js.git"
+  },
+  "dependencies": {
+    "domhelpers": "^0.1.0",
+    "superagent": "^1.2.0"
+  }
+}
