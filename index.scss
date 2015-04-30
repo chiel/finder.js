@@ -34,10 +34,30 @@
 		}
 	}
 	.finder-file {
+		width: 600px;
 		border-right: 0;
 	}
+	.finder-file-details {
+		dl {
+			overflow: hidden;
+		}
+		dt {
+			clear: both;
+			float: left;
+			width: 50%;
+			margin: 0;
+			padding: 0 6px 0 0;
+			font-weight: 400;
+			text-align: right;
+		}
+		dd {
+			float: right;
+			width: 50%;
+			margin: 0;
+			padding: 0 0 0 6px;
+		}
+	}
 	.finder-image {
-		width: 600px;
 		figure {
 			margin: 0;
 			img {

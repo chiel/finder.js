@@ -2,6 +2,8 @@
 
 var request = require('superagent');
 var getParent = require('domhelpers/getParent');
+var fileTypes = require('./types');
+var defaultType = require('./types/default');
 
 var Finder = function(options){
 	if (!(this instanceof Finder)) return new Finder(options);
@@ -115,7 +117,7 @@ Finder.prototype.loadPath = function(path){
 		if (response.body.type === 'directory'){
 			self.buildDir(panel, response.body);
 		} else {
-			self.buildImage(panel, response.body);
+			self.buildFile(panel, response.body);
 		}
 
 		var rect = self.active[self.active.length - 1].getBoundingClientRect();
@@ -145,18 +147,26 @@ Finder.prototype.buildDir = function(panel, data){
 	panel.appendChild(ul);
 };
 
-Finder.prototype.buildImage = function(panel, data){
-	panel.classList.add('finder-image');
+Finder.prototype.buildFile = function(panel, data){
+	panel.classList.add('finder-file');
 
-	var fig = document.createElement('figure');
-	var img = new Image();
-	fig.appendChild(img);
-	img.addEventListener('load', function(){
-		img.classList.add('is-loaded');
-	});
-	img.src = this.options.path + data.relative_path;
+	var found;
 
-	panel.appendChild(fig);
+	for (var i = 0; i < fileTypes.length; i++){
+		if (fileTypes[i].regex.test(data.name)){
+			fileTypes[i].fn(panel, data, this.options);
+			found = true;
+			break;
+		}
+	}
+
+	if (!found){
+		defaultType(panel, data, this.options);
+	}
+};
+
+Finder.registerFileType = function(regex, fn){
+	fileTypes.push({ regex: regex, fn: fn });
 };
 
 module.exports = Finder;
