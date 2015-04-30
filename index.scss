@@ -1,13 +1,35 @@
 .finder-wrap {
 	position: relative;
 	height: 100%;
+	.finder-btn {
+		padding: 0 12px;
+		border: 0;
+		border-radius: 3px;
+		background: #2f6d86;
+		color: #fff;
+		line-height: 30px;
+	}
 	.finder-main {
 		overflow: auto;
 		position: absolute;
 		top: 0;
 		left: 0;
 		right: 0;
+		bottom: 43px;
+	}
+	.finder-footer {
+		position: absolute;
+		left: 0;
+		right: 0;
 		bottom: 0;
+		height: 43px;
+		padding: 0 12px;
+		border-top: 1px solid #aaa;
+		background: #ddd;
+	}
+	.finder-actions {
+		float: right;
+		margin: 6px 0 0;
 	}
 	.finder-panels {
 		height: 100%;

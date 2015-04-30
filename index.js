@@ -5,10 +5,19 @@ var getParent = require('domhelpers/getParent');
 var fileTypes = require('./types');
 var defaultType = require('./types/default');
 
+/**
+ * Create new finder with given option
+ * @param {Object} options
+ */
 var Finder = function(options){
 	if (!(this instanceof Finder)) return new Finder(options);
 	this.options = options;
+	this.currentPath = '';
+	this.active = [];
+	this.widths = [];
 };
+
+require('inherits')(Finder, require('events').EventEmitter);
 
 /**
  * Build basic elements for the finder
@@ -35,14 +44,23 @@ Finder.prototype.build = function(){
 	wrap.appendChild(footer);
 	this.footer = footer;
 
-	this.active = [];
-	this.widths = [];
+	var actions = document.createElement('div');
+	actions.classList.add('finder-actions');
+	footer.appendChild(actions);
+	this.actions = actions;
+
+	var selectButton = document.createElement('button');
+	selectButton.classList.add('finder-btn');
+	selectButton.setAttribute('type', 'button');
+	selectButton.textContent = 'Select';
+	actions.appendChild(selectButton);
+	this.selectButton = selectButton;
 
 	this.setEvents();
 };
 
 /**
- * Set required events
+ * Set finder events
  */
 Finder.prototype.setEvents = function(){
 	var self = this;
@@ -79,6 +97,11 @@ Finder.prototype.setEvents = function(){
 		// load selected item
 		self.loadPath(e.target.dataset.path);
 	});
+
+	this.selectButton.addEventListener('click', function(e){
+		e.preventDefault();
+		self.emit('file.selected', self.currentPath);
+	});
 };
 
 /**
@@ -90,6 +113,11 @@ Finder.prototype.open = function(parent){
 	parent.appendChild(this.wrap);
 	var rect = this.main.getBoundingClientRect();
 	this.width = rect.width || rect.right - rect.left;
+	this.widths = [];
+	while (this.active.length){
+		this.panels.removeChild(this.active.pop());
+	}
+
 	this.loadPath('/');
 };
 
@@ -113,6 +141,7 @@ Finder.prototype.loadPath = function(path){
 
 		panel.classList.remove('is-loading');
 		self.active.push(panel);
+		self.currentPath = path;
 
 		if (response.body.type === 'directory'){
 			self.buildDir(panel, response.body);
