@@ -82,10 +82,10 @@ Finder.prototype.setEvents = function(){
 };
 
 /**
- * Append the finder html to the given dom node
+ * Open the finder in given parent element
  * @param {Element} parent
  */
-Finder.prototype.attach = function(parent){
+Finder.prototype.open = function(parent){
 	this.build();
 	parent.appendChild(this.wrap);
 	var rect = this.main.getBoundingClientRect();
