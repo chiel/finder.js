@@ -2,6 +2,8 @@
 
 var request = require('superagent');
 var getParent = require('domhelpers/getParent');
+var ltrim = require('mout/string/ltrim');
+var map = require('mout/array/map');
 var fileTypes = require('./types');
 var defaultType = require('./types/default');
 
@@ -108,7 +110,7 @@ Finder.prototype.setEvents = function(){
  * Open the finder in given parent element
  * @param {Element} parent
  */
-Finder.prototype.open = function(parent){
+Finder.prototype.open = function(parent, path){
 	this.build();
 	parent.appendChild(this.wrap);
 	var rect = this.main.getBoundingClientRect();
@@ -118,20 +120,45 @@ Finder.prototype.open = function(parent){
 		this.panels.removeChild(this.active.pop());
 	}
 
-	this.loadPath('/');
+	if (path){
+		var completePath = '';
+		path = map(ltrim(path, '/').split('/'), function(item){
+			completePath += '/' + item;
+			return completePath;
+		});
+		path.unshift('/');
+
+		var self = this;
+		var prevPanel;
+		var loadNext = function(){
+			if (!path.length) return;
+			var curPath = path.shift();
+			self.loadPath(curPath, function(panel){
+				if (prevPanel){
+					var item = prevPanel.querySelector('[data-path^="' + curPath + '"]');
+					if (item) item.classList.add('is-selected');
+				}
+				prevPanel = panel;
+				loadNext();
+			});
+		};
+		loadNext();
+	} else {
+		this.loadPath('/');
+	}
 };
 
 /**
  * Fetch data for given path
  */
-Finder.prototype.loadPath = function(path){
+Finder.prototype.loadPath = function(path, cb){
 	var panel = document.createElement('div');
 	panel.classList.add('finder-panel');
 	panel.classList.add('is-loading');
 	this.panels.appendChild(panel);
 
 	var self = this;
-	request.get(this.options.endpoint + '?path=' + path).end(function(err, response){
+	request.get(this.options.endpoints.list + '?path=' + path).end(function(err, response){
 		if (err){
 			return console.error('Failed to fetch directory listing', err);
 		}
@@ -157,6 +184,8 @@ Finder.prototype.loadPath = function(path){
 
 		self.panels.style.width = width + 'px';
 		self.main.scrollLeft = Math.max(0, width - self.width);
+
+		if (cb) cb(panel);
 	});
 };
 
