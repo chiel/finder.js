@@ -1,9 +1,11 @@
 'use strict';
 
 var request = require('superagent');
+var getClosest = require('domhelpers/getClosest');
 var getParent = require('domhelpers/getParent');
 var ltrim = require('mout/string/ltrim');
 var map = require('mout/array/map');
+var formatSize = require('./lib/format_size');
 var fileTypes = require('./types');
 var defaultType = require('./types/default');
 
@@ -75,19 +77,9 @@ Finder.prototype.setEvents = function(){
 		// get panel for current click target
 		var panel = getParent(e.target, '.finder-panel');
 
-		// kill all panels that are active after this one
-		while (self.active.length){
-			if (self.active[self.active.length - 1] !== panel){
-				self.panels.removeChild(self.active.pop());
-			} else {
-				break;
-			}
-		}
+		self.clearPanels(panel);
 
-		// kill all widhts that just got removed
-		self.widths = self.widths.slice(0, self.active.length);
-
-		// clear all selected items
+		// clear currently selected items
 		var selected = panel.querySelector('.is-selected');
 		if (selected){
 			selected.classList.remove('is-selected');
@@ -100,10 +92,45 @@ Finder.prototype.setEvents = function(){
 		self.loadPath(e.target.dataset.path);
 	});
 
+	this.panels.addEventListener('dragover', function(e){
+		e.preventDefault();
+	});
+
+	this.panels.addEventListener('dragend', function(e){
+		e.preventDefault();
+	});
+
+	this.panels.addEventListener('drop', function(e){
+		e.preventDefault();
+
+		var dir = getClosest(e.target, '.finder-dir');
+		if (!dir) return;
+
+		self.uploadFiles(dir.dataset.path, e.dataTransfer.files, dir);
+	});
+
 	this.selectButton.addEventListener('click', function(e){
 		e.preventDefault();
 		self.emit('file.selected', self.currentPath);
 	});
+};
+
+/**
+ * Clear all panels after given panel
+ *
+ * Clears all panels if no panel is given
+ * @param {Element} panel
+ */
+Finder.prototype.clearPanels = function(panel){
+	while (this.active.length){
+		if (this.active[this.active.length - 1] !== panel){
+			this.panels.removeChild(this.active.pop());
+		} else {
+			break;
+		}
+	}
+
+	this.widths = this.widths.slice(0, this.active.length);
 };
 
 /**
@@ -149,6 +176,49 @@ Finder.prototype.open = function(parent, path){
 };
 
 /**
+ * Upload files to a path
+ * @param {String} path
+ * @param {FileList} files
+ * @param {Element} panel
+ */
+Finder.prototype.uploadFiles = function(path, files, panel){
+	var self = this;
+
+	var overlay = document.createElement('div');
+	overlay.classList.add('finder-upload-overlay');
+	var progressWrap = document.createElement('span');
+	progressWrap.classList.add('finder-upload-progress-wrap');
+	var progress = document.createElement('span');
+	progress.classList.add('finder-upload-progress');
+	progressWrap.appendChild(progress);
+	overlay.appendChild(progressWrap);
+
+	var ul = document.createElement('ul');
+	overlay.appendChild(ul);
+
+	var req = request.post(this.options.endpoints.upload + '?path=' + path);
+	for (var i = 0; i < files.length; i++){
+		req.field('file', files[i]);
+		var li = document.createElement('li');
+		li.classList.add('finder-upload');
+		li.innerHTML = '<span class="finder-upload-name">' + files[i].name + '</span>' +
+			'<span class="finder-upload-size">' + formatSize(files[i].size) + '</span>';
+		ul.appendChild(li);
+	}
+
+	panel.appendChild(overlay);
+
+	req.on('progress', function(e){
+		progress.style.width = Math.round(e.percent) + '%';
+	})
+	.end(function(err, response){
+		self.clearPanels(panel.previousSibling);
+		self.loadPath(path);
+		panel.removeChild(overlay);
+	});
+};
+
+/**
  * Fetch data for given path
  */
 Finder.prototype.loadPath = function(path, cb){
@@ -169,6 +239,8 @@ Finder.prototype.loadPath = function(path, cb){
 		panel.classList.remove('is-loading');
 		self.active.push(panel);
 		self.currentPath = path;
+
+		panel.dataset.path = path;
 
 		if (response.body.type === 'directory'){
 			self.buildDir(panel, response.body);
