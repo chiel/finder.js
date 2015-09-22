@@ -9,11 +9,11 @@ var substitute = require('../lib/substitute');
  * @param {Object} data
  */
 module.exports = function(panel, data, options){
-	panel.classList.add('finder-image');
+	panel.classList.add('finder__image');
 
 	var fig = document.createElement('figure');
 	var div = document.createElement('div');
-	div.classList.add('finder-file-details');
+	div.classList.add('finder__file-details');
 
 	var tpl = '<dl>' +
 		'<dt>Name</dt><dd>{{ name }}</dd>' +

@@ -30,31 +30,31 @@ Finder.prototype.build = function(){
 	if (this.wrap) return;
 
 	var wrap = document.createElement('div');
-	wrap.classList.add('finder-wrap');
+	wrap.classList.add('finder');
 	this.wrap = wrap;
 
 	var main = document.createElement('main');
-	main.classList.add('finder-main');
+	main.classList.add('finder__main');
 	wrap.appendChild(main);
 	this.main = main;
 
 	var panels = document.createElement('section');
-	panels.classList.add('finder-panels');
+	panels.classList.add('finder__panels');
 	main.appendChild(panels);
 	this.panels = panels;
 
 	var footer = document.createElement('footer');
-	footer.classList.add('finder-footer');
+	footer.classList.add('finder__footer');
 	wrap.appendChild(footer);
 	this.footer = footer;
 
 	var actions = document.createElement('div');
-	actions.classList.add('finder-actions');
+	actions.classList.add('finder__actions');
 	footer.appendChild(actions);
 	this.actions = actions;
 
 	var selectButton = document.createElement('button');
-	selectButton.classList.add('finder-btn');
+	selectButton.classList.add('finder__btn');
 	selectButton.setAttribute('type', 'button');
 	selectButton.textContent = 'Select';
 	actions.appendChild(selectButton);
@@ -75,7 +75,7 @@ Finder.prototype.setEvents = function(){
 		e.preventDefault();
 
 		// get panel for current click target
-		var panel = getParent(e.target, '.finder-panel');
+		var panel = getParent(e.target, '.finder__panel');
 
 		self.clearPanels(panel);
 
@@ -103,7 +103,7 @@ Finder.prototype.setEvents = function(){
 	this.panels.addEventListener('drop', function(e){
 		e.preventDefault();
 
-		var dir = getClosest(e.target, '.finder-dir');
+		var dir = getClosest(e.target, '.finder__dir');
 		if (!dir) return;
 
 		self.uploadFiles(dir.dataset.path, e.dataTransfer.files, dir);
@@ -185,11 +185,11 @@ Finder.prototype.uploadFiles = function(path, files, panel){
 	var self = this;
 
 	var overlay = document.createElement('div');
-	overlay.classList.add('finder-upload-overlay');
+	overlay.classList.add('finder__upload-overlay');
 	var progressWrap = document.createElement('span');
-	progressWrap.classList.add('finder-upload-progress-wrap');
+	progressWrap.classList.add('finder__upload-progress-wrap');
 	var progress = document.createElement('span');
-	progress.classList.add('finder-upload-progress');
+	progress.classList.add('finder__upload-progress');
 	progressWrap.appendChild(progress);
 	overlay.appendChild(progressWrap);
 
@@ -200,9 +200,9 @@ Finder.prototype.uploadFiles = function(path, files, panel){
 	for (var i = 0; i < files.length; i++){
 		req.field('file', files[i]);
 		var li = document.createElement('li');
-		li.classList.add('finder-upload');
-		li.innerHTML = '<span class="finder-upload-name">' + files[i].name + '</span>' +
-			'<span class="finder-upload-size">' + formatSize(files[i].size) + '</span>';
+		li.classList.add('finder__upload');
+		li.innerHTML = '<span class="finder__upload-name">' + files[i].name + '</span>' +
+			'<span class="finder__upload-size">' + formatSize(files[i].size) + '</span>';
 		ul.appendChild(li);
 	}
 
@@ -223,7 +223,7 @@ Finder.prototype.uploadFiles = function(path, files, panel){
  */
 Finder.prototype.loadPath = function(path, cb){
 	var panel = document.createElement('div');
-	panel.classList.add('finder-panel');
+	panel.classList.add('finder__panel');
 	panel.classList.add('is-loading');
 	this.panels.appendChild(panel);
 
@@ -262,7 +262,7 @@ Finder.prototype.loadPath = function(path, cb){
 };
 
 Finder.prototype.buildDir = function(panel, data){
-	panel.classList.add('finder-dir');
+	panel.classList.add('finder__dir');
 
 	var ul = document.createElement('ul');
 	var file, li;
@@ -278,7 +278,7 @@ Finder.prototype.buildDir = function(panel, data){
 };
 
 Finder.prototype.buildFile = function(panel, data){
-	panel.classList.add('finder-file');
+	panel.classList.add('finder__file');
 
 	var found;
 

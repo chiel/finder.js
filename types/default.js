@@ -10,7 +10,7 @@ var substitute = require('../lib/substitute');
  */
 module.exports = function(panel, data, options){
 	var div = document.createElement('div');
-	div.classList.add('finder-file-details');
+	div.classList.add('finder__file-details');
 
 	var tpl = '<dl>' +
 		'<dt>Name</dt><dd>{{ name }}</dd>' +
