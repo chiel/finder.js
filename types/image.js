@@ -29,14 +29,35 @@ module.exports = function(panel, data, options){
 	});
 	var dim = div.querySelector('[data-name]');
 
+	panel.appendChild(fig);
+	panel.appendChild(div);
+
+	var r = fig.getBoundingClientRect();
+	var maxWidth = r.right - r.left - 50;
+	var maxHeight = r.bottom - r.top - 50;
+	var width, height, ratio;
+
 	var img = new Image();
 	fig.appendChild(img);
 	img.addEventListener('load', function(){
+		width = img.naturalWidth;
+		height = img.naturalHeight;
+
+		if (width > maxWidth){
+			ratio = maxWidth / width;
+			width = maxWidth;
+			height = height * ratio;
+		}
+		if (height > maxHeight){
+			ratio = maxHeight / height;
+			height = maxHeight;
+			width = width * ratio;
+		}
+
+		img.style.width = Math.floor(width) + 'px';
+		img.style.height = Math.floor(height) + 'px';
 		img.classList.add('is-loaded');
-		dim.innerHTML = img.naturalWidth + 'x' + img.naturalHeight;
+		dim.innerHTML = img.naturalWidth + ' x ' + img.naturalHeight;
 	});
 	img.src = options.path + data.relative_path;
-
-	panel.appendChild(fig);
-	panel.appendChild(div);
 };

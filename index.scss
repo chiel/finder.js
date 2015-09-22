@@ -108,16 +108,25 @@
 	}
 	.finder-image {
 		figure {
+			position: relative;
+			height: 380px;
 			margin: 0;
+			background: #222;
+			background: linear-gradient(to bottom, #eee 0%, #fff 100%);
+
 			img {
+				position: absolute;
+				top: 50%;
+				left: 50%;
 				display: block;
-				max-width: 100%;
-				max-height: 300px;
 				margin: 0 auto;
 				opacity: 0;
+				box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+				transform: translate3d(-50%, -50%, 0);
 				-webkit-transition: opacity .4s ease-out;
 				-moz-transition: opacity .4s ease-out;
 				transition: opacity .4s ease-out;
+
 				&.is-loaded {
 					opacity: 1;
 				}
