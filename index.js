@@ -125,7 +125,7 @@ Finder.prototype.clearPanels = function(panel){
 	while (this.active.length){
 		if (this.active[this.active.length - 1] !== panel){
 			this.panels.removeChild(this.active.pop());
-		} else {
+		} else{
 			break;
 		}
 	}
@@ -170,7 +170,7 @@ Finder.prototype.open = function(parent, path){
 			});
 		};
 		loadNext();
-	} else {
+	} else{
 		this.loadPath('/');
 	}
 };
@@ -244,7 +244,7 @@ Finder.prototype.loadPath = function(path, cb){
 
 		if (response.body.type === 'directory'){
 			self.buildDir(panel, response.body);
-		} else {
+		} else{
 			self.buildFile(panel, response.body);
 		}
 
