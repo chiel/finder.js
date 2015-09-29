@@ -3,10 +3,10 @@
 var request = require('superagent');
 var getClosest = require('domhelpers/getClosest');
 var getParent = require('domhelpers/getParent');
+var forOwn = require('mout/object/forOwn');
 var ltrim = require('mout/string/ltrim');
 var map = require('mout/array/map');
 var formatSize = require('./lib/format_size');
-var fileTypes = require('./types');
 var defaultType = require('./types/default');
 
 /**
@@ -280,23 +280,25 @@ Finder.prototype.buildDir = function(panel, data){
 Finder.prototype.buildFile = function(panel, data){
 	panel.classList.add('finder__file');
 
+	var self = this;
 	var found;
+	forOwn(Finder.types, function(type){
+		if (found || !type.regex.test(data.name)) return;
 
-	for (var i = 0; i < fileTypes.length; i++){
-		if (fileTypes[i].regex.test(data.name)){
-			fileTypes[i].fn(panel, data, this.options);
-			found = true;
-			break;
-		}
-	}
+		type(panel, data, self.options);
+		found = true;
+	});
 
 	if (!found){
 		defaultType(panel, data, this.options);
 	}
 };
 
-Finder.registerFileType = function(regex, fn){
-	fileTypes.push({ regex: regex, fn: fn });
+/**
+ * Expose types
+ */
+Finder.types = {
+	image: require('./types/image')
 };
 
 module.exports = Finder;

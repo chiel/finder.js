@@ -61,3 +61,7 @@ module.exports = function(panel, data, options){
 	});
 	img.src = options.path + data.relative_path;
 };
+
+imageType.regex = /\.(jpe?g|gif|png)$/;
+
+module.exports = imageType;
