@@ -7,8 +7,10 @@ var substitute = require('../lib/substitute');
  * Render an image file view
  * @param {Element} panel
  * @param {Object} data
+ * @param {Object} options
+ * @param {Function} cb
  */
-module.exports = function(panel, data, options){
+var imageType = function(panel, data, options, cb){
 	panel.classList.add('finder__image');
 
 	var fig = document.createElement('figure');
@@ -58,6 +60,8 @@ module.exports = function(panel, data, options){
 		img.style.height = Math.floor(height) + 'px';
 		img.classList.add('is-loaded');
 		dim.innerHTML = img.naturalWidth + ' x ' + img.naturalHeight;
+
+		if (cb) cb();
 	});
 	img.src = options.path + data.relative_path;
 };
