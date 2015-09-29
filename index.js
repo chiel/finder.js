@@ -70,7 +70,7 @@ Finder.prototype.setEvents = function(){
 	var self = this;
 
 	this.panels.addEventListener('click', function(e){
-		if (!e.target.dataset.path || e.target.classList.contains('is-selected')) return;
+		if (!e.target.dataset.loadPath || e.target.classList.contains('is-selected')) return;
 
 		e.preventDefault();
 
@@ -89,7 +89,7 @@ Finder.prototype.setEvents = function(){
 		e.target.classList.add('is-selected');
 
 		// load selected item
-		self.loadPath(e.target.dataset.path);
+		self.loadPath(e.target.dataset.loadPath);
 	});
 
 	this.panels.addEventListener('dragover', function(e){
@@ -162,7 +162,7 @@ Finder.prototype.open = function(parent, path){
 			var curPath = path.shift();
 			self.loadPath(curPath, function(panel){
 				if (prevPanel){
-					var item = prevPanel.querySelector('[data-path^="' + curPath + '"]');
+					var item = prevPanel.querySelector('[data-load-path^="' + curPath + '"]');
 					if (item) item.classList.add('is-selected');
 				}
 				prevPanel = panel;
@@ -270,7 +270,7 @@ Finder.prototype.buildDir = function(panel, data){
 		file = data.files[i];
 		li = document.createElement('li');
 		li.textContent = file.name;
-		li.dataset.path = file.relative_path;
+		li.dataset.loadPath = file.relative_path;
 		ul.appendChild(li);
 	}
 
